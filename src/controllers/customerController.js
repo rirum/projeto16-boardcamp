@@ -17,6 +17,7 @@ export async function listarClientesPorId(req, res){
         const customerId = await db.query('SELECT * FROM customers WHERE id = $1', [id]);
         
        if (customerId.rows.length === 0) return res.sendStatus(404)
+       return res.send(customerId.rows[0])
     } catch(error){
         res.status(500).send(error.message);
     }
@@ -31,6 +32,10 @@ try {
     const customerCpf = await db.query('SELECT * FROM customers WHERE cpf = $1', [cpf]);
     if (customerCpf.rowCount > 0)
     return res.status(409).send("Esse CPF já existe");
+
+    if(!name || !phone || !cpf || !birthday ){
+        return res.sendStatus(400);
+    }
 
     const result = await db.query('INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)', [name, phone, cpf, birthday]);
     if (result.rowCount === 0){
