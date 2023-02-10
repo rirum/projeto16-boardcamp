@@ -15,9 +15,8 @@ export async function listarClientesPorId(req, res){
     const {id} = req.params;
     try {
         const customerId = await db.query('SELECT * FROM customers WHERE id = $1', [id]);
-
-        if (customerId.rowCount === 0)
-        return res.status(404).send("Id informado não existe!")
+        
+       if (customerId.rows.length === 0) return res.sendStatus(404)
     } catch(error){
         res.status(500).send(error.message);
     }
@@ -33,7 +32,10 @@ try {
     if (customerCpf.rowCount > 0)
     return res.status(409).send("Esse CPF já existe");
 
-    await db.query('INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)', [name, phone, cpf, birthday]);
+    const result = await db.query('INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)', [name, phone, cpf, birthday]);
+    if (result.rowCount === 0){
+        return res.sendStatus(400);
+    }
         res.sendStatus(201);
 }catch(error) {
     res.status(500).send(error.message)
