@@ -12,12 +12,16 @@ export async function listarClientes(req, res){
 
 //get customers by id
 export async function listarClientesPorId(req, res){
-    const {id} = req.params;
+    // const {id} = req.params;
+    const idCustomer = Number(req.params.id);
+    if (!idCustomer || idCustomer < 1 ) {
+        return res.sendStatus(400);
+    }
     try {
-        const customerId = await db.query('SELECT * FROM customers WHERE id = $1', [id]);
+        const resultado = await db.query('SELECT * FROM customers WHERE id = $1', [id]);
         
-       if (customerId.rows.length === 0) return res.sendStatus(404)
-       return res.send(customerId.rows[0])
+       if (resultado.rows.length === 0) return res.sendStatus(404)
+       return res.send(resultado.rows[0])
     } catch(error){
         res.status(500).send(error.message);
     }
@@ -33,9 +37,9 @@ try {
     if (customerCpf.rowCount > 0)
     return res.status(409).send("Esse CPF já existe");
 
-    if(!name || !phone || !cpf || !birthday ){
-        return res.sendStatus(400);
-    }
+    // if(!name || !phone || !cpf || !birthday ){
+    //     return res.sendStatus(400);
+    // }
 
     const result = await db.query('INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)', [name, phone, cpf, birthday]);
     if (result.rowCount === 0){
@@ -50,6 +54,18 @@ try {
 
 //put customers
 export async function editarClientes(req, res){
+    const idCustomer = Number(req.params.id);
+    if (!idCustomer || idCustomer < 1 ) {
+        return res.sendStatus(400);
+    }
 
+    try{
+        const resultado = await db.query('SELECT * FROM customers WHERE id = $1', [idCustomer]);
+        if (resultado.rowCount === 0) {
+            return res.sendStatus(404);
+        }
+    }catch(error){
+        res.sendStatus(500);
+    }
     
 }
