@@ -18,9 +18,9 @@ export async function listarClientesPorId(req, res){
         return res.sendStatus(400);
     }
     try {
-        const resultado = await db.query('SELECT * FROM customers WHERE id = $1', [id]);
+        const resultado = await db.query('SELECT * FROM customers WHERE id = $1', [idCustomer]);
         
-       if (resultado.rows.length === 0) {return res.sendStatus(404) };
+       if (resultado.rowCount === 0) {return res.sendStatus(404) };
        return res.status(200).send(resultado.rows[0])
     } catch(error){
         res.status(500).send(error.message);
