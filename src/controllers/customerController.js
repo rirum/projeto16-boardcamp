@@ -20,8 +20,8 @@ export async function listarClientesPorId(req, res){
     try {
         const resultado = await db.query('SELECT * FROM customers WHERE id = $1', [id]);
         
-       if (resultado.rows.length === 0) return res.sendStatus(404)
-       return res.send(resultado.rows[0])
+       if (resultado.rows.length === 0) {return res.sendStatus(404) };
+       return res.status(200).send(resultado.rows[0])
     } catch(error){
         res.status(500).send(error.message);
     }
@@ -63,18 +63,18 @@ export async function editarClientes(req, res){
     //     return res.sendStatus(400);
     // }
 
-    const existeCpf = await db.query("SELECT * FROM customers WHERE cpf = $1 AND id <> $2", [cpf, id]);
-    if (existeCpf.rowCount > 0) { 
-        res.sendStatus(409)};
 
     try{
-        await db.query("UPDATE customers SET name = $1, phone = $2, cpf = $3, birthday = $4 WHERE id = $5", [name, phone,cpf, birthday, id]);
-        // const resultado = await db.query('SELECT * FROM customers WHERE id = $1', [idCustomer]);
-        // if (resultado.rowCount === 0) {
-        //     return res.sendStatus(404);
-        res.sendStatus(200);
+
+        const existeCpf = await db.query("SELECT * FROM customers WHERE cpf = $1 AND id <> $2", [cpf, id]);
+        if (existeCpf.rowCount > 0) { res.sendStatus(409)};
+
+        const editaCliente = await db.query("UPDATE customers SET name = $1, phone = $2, cpf = $3, birthday = $4 WHERE id = $5", [name, phone,cpf, birthday, id]);
+       
+        if (editaCliente.rowCount === 0) {return res.sendStatus(400);
         }
-    catch(error){
+        res.sendStatus(200);
+        }catch(error){
         res.sendStatus(500);
     }
 }
