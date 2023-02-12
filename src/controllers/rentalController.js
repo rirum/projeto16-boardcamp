@@ -25,7 +25,7 @@ export async function inserirAluguel(req, res){
     const { customerId, gameId, daysRented } = req.body;
 
     try {
-        if (typeof customerId === "number" && gameId === "number") {
+        if (typeof customerId === "number" && typeof gameId === "number") {
             let customer = await db.query("SELECT * FROM customers WHERE id = $1", [
               customerId,
             ]);
