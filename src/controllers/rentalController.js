@@ -25,7 +25,7 @@ export async function inserirAluguel(req, res){
     const { customerId, gameId, daysRented } = req.body;
 
     try {
-      let customer = await db.query("SELECT * FROM customers WHERE id = $1", [
+      const customer = await db.query("SELECT * FROM customers WHERE id = $1", [
         customerId,
       ]);
   
@@ -35,7 +35,7 @@ export async function inserirAluguel(req, res){
   
       customer = customer.rows[0];
   
-      let game = await db.query("SELECT * FROM games WHERE id = $1", [gameId]);
+      const game = await db.query("SELECT * FROM games WHERE id = $1", [gameId]);
   
       if (game.rowCount !== 1) {
         return res.sendStatus(400);
