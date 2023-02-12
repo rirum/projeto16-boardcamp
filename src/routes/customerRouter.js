@@ -5,9 +5,9 @@ import { customerSchema } from "../schemas/customerSchema.js";
 
 
 const customerRouter = Router();
-customerRouter.post("/customers", inserirCliente);
+customerRouter.post("/customers",validateSchema(customerSchema), inserirCliente);
 customerRouter.get("/customers", listarClientes);
-customerRouter.get("/customers/:id", validateSchema(customerSchema), listarClientesPorId);
+customerRouter.get("/customers/:id", listarClientesPorId);
 customerRouter.put("/customers/:id", validateSchema(customerSchema), editarClientes);
 
 export default customerRouter;

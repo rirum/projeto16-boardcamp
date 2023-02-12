@@ -12,7 +12,7 @@ export async function listarClientes(req, res){
 
 //get customers by id
 export async function listarClientesPorId(req, res){
-    // const {id} = req.params;
+    
     const idCustomer = Number(req.params.id);
     if (!idCustomer || idCustomer < 1 ) {
         return res.sendStatus(400);
@@ -37,9 +37,7 @@ try {
     if (customerCpf.rowCount > 0)
     return res.status(409).send("Esse CPF já existe");
     
-    // if(!name || !phone || !cpf || !birthday ){
-    //     return res.sendStatus(400);
-    // }
+  
     
     const result = await db.query('INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4)', [name, phone, cpf, birthday]);
     if (result.rowCount === 0){
@@ -57,11 +55,6 @@ export async function editarClientes(req, res){
 
     const {name, phone, cpf, birthday} = req.body;
     const {id } = req.params;
-
-    // const idCustomer = Number(req.params.id);
-    // if (!idCustomer || idCustomer < 1 ) {
-    //     return res.sendStatus(400);
-    // }
 
 
     try{
