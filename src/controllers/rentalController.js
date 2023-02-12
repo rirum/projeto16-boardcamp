@@ -150,19 +150,21 @@ export async function apagarAluguel(req,res){
         if (rentals.rowCount === 0) {
             return res.sendStatus(404);
           }
-
-          const rental = rentals.rows[0];
-
-          if (!rental.returnDate) {
+          const rentalIsFinished = await db.query(
+            'SELECT * FROM rentals WHERE id = $1 AND "returnDate" IS NOT NULL',
+            [id]
+          );
+          if (rentalIsFinished.rowCount !== 1) {
             return res.sendStatus(400);
           }
-      
-          await db.query("DELETE FROM rentals WHERE id = $1", [id]);
-
-          res.sendStatus(200)
-
+          const deleteRental = await db.query('DELETE FROM rentals WHERE id = $1', [
+            id,
+          ]);
+          if (deleteRental.rowCount === 1) {
+            return res.sendStatus(200);
+          }
 
     }catch(error){
-        res.status(500).send(error.message);
+       return res.status(500).send(error.message);
     }
 }
