@@ -25,63 +25,67 @@ export async function inserirAluguel(req, res){
     const { customerId, gameId, daysRented } = req.body;
 
     try {
-      let customer = await db.query("SELECT * FROM customers WHERE id = $1", [
-        customerId,
-      ]);
-  
-      if (customer.rowCount === 0) {
-        return res.sendStatus(400);
-      }
-  
-      customer = customer.rows[0];
-  
-      let game = await db.query("SELECT * FROM games WHERE id = $1", [gameId]);
-  
-      if (game.rowCount === 0) {
-        return res.sendStatus(400);
-      }
-  
-      game = game.rows[0];
-  
-      if (daysRented < 1) {
-        return res.sendStatus(400);
-      }
-  
-      let rentals = await db.query(
-        'SELECT * FROM rentals WHERE "gameId" = $1 AND "returnDate" IS NULL ',
-        [gameId]
-      );
-  
-      if (rentals.rowCount >= game.stockTotal) {
-        return res.sendStatus(400);
-      }
-  
-      let originalPrice = daysRented * game.pricePerDay;
-  
-      let rent = {
-        customerId: customerId,
-        gameId: gameId,
-        daysRented: daysRented,
-        rentDate: new Date(Date.now()),
-        originalPrice: originalPrice,
-      };
-  
-      const result = await db.query(
-        'INSERT INTO rentals ("customerId", "gameId", "daysRented", "rentDate", "originalPrice") VALUES($1, $2, $3, $4, $5)',
-        [
-          rent.customerId,
-          rent.gameId,
-          rent.daysRented,
-          rent.rentDate,
-          rent.originalPrice,
-        ]
-      );
-  
-      if (result.rowCount === 0) {
-        return res.sendStatus(400);
-      }
-  
-      res.sendStatus(201);
+        if (typeof customerId === "number" && gameId === "number") {
+            let customer = await db.query("SELECT * FROM customers WHERE id = $1", [
+              customerId,
+            ]);
+      
+            if (customer.rowCount === 0) {
+              return res.sendStatus(400);
+            }
+      
+            customer = customer.rows[0];
+      
+            let game = await db.query("SELECT * FROM games WHERE id = $1", [gameId]);
+      
+            if (game.rowCount === 0) {
+              return res.sendStatus(400);
+            }
+      
+            game = game.rows[0];
+      
+            if (daysRented < 1) {
+              return res.sendStatus(400);
+            }
+      
+            let rentals = await db.query(
+              'SELECT * FROM rentals WHERE "gameId" = $1 AND "returnDate" IS NULL ',
+              [gameId]
+            );
+      
+            if (rentals.rowCount >= game.stockTotal) {
+              return res.sendStatus(400);
+            }
+      
+            let originalPrice = daysRented * game.pricePerDay;
+      
+            let rent = {
+              customerId: customerId,
+              gameId: gameId,
+              daysRented: daysRented,
+              rentDate: new Date(Date.now()),
+              originalPrice: originalPrice,
+            };
+      
+            const result = await db.query(
+              'INSERT INTO rentals ("customerId", "gameId", "daysRented", "rentDate", "originalPrice") VALUES($1, $2, $3, $4, $5)',
+              [
+                rent.customerId,
+                rent.gameId,
+                rent.daysRented,
+                rent.rentDate,
+                rent.originalPrice,
+              ]
+            );
+      
+            if (result.rowCount === 0) {
+              return res.sendStatus(400);
+            }
+      
+            res.sendStatus(201);
+          }
+      
+          return res.sendStatus(400);
 
     }catch(error){
         res.status(500).send(error.message);
@@ -106,6 +110,7 @@ export async function concluirAluguel(req,res){
           return res.sendStatus(400);
         }
     
+
         let game = await db.query("SELECT * FROM games WHERE id = $1", [
           rental.gameId,
         ]);
