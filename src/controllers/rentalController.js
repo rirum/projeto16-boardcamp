@@ -25,19 +25,19 @@ export async function inserirAluguel(req, res){
     const { customerId, gameId, daysRented } = req.body;
 
     try {
-      const customer = await db.query("SELECT * FROM customers WHERE id = $1", [
+      let customer = await db.query("SELECT * FROM customers WHERE id = $1", [
         customerId,
       ]);
   
-      if (customer.rowCount !== 1) {
+      if (customer.rowCount === 0) {
         return res.sendStatus(400);
       }
   
       customer = customer.rows[0];
   
-      const game = await db.query("SELECT * FROM games WHERE id = $1", [gameId]);
+      let game = await db.query("SELECT * FROM games WHERE id = $1", [gameId]);
   
-      if (game.rowCount !== 1) {
+      if (game.rowCount === 0) {
         return res.sendStatus(400);
       }
   
@@ -152,9 +152,12 @@ export async function apagarAluguel(req,res){
             return res.sendStatus(400);
           }
       
-          
+          const deleteRental = await db.query("DELETE FROM rentals WHERE id = $1", [id]);
+          if (deleteRental.rowCount === 1){
+            return  res.sendStatus(200);
+          }
 
-        res.sendStatus(200);
+       
     }catch(error){
         res.status(500).send(error.message);
     }
