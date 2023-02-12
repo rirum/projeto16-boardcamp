@@ -144,27 +144,32 @@ export async function concluirAluguel(req,res){
 
 //delete DELETE /rentals/:id
 export async function apagarAluguel(req,res){
-    const { id } = req.params;
-    try{
-        let rentals = await db.query("SELECT * FROM rentals WHERE id = $1;" [id]);
-        if (rentals.rowCount === 0) {
-            return res.sendStatus(404);
-          }
-          const rentalIsFinished = await db.query(
-            'SELECT * FROM rentals WHERE id = $1 AND "returnDate" IS NOT NULL',
-            [id]
-          );
-          if (rentalIsFinished.rowCount !== 1) {
-            return res.sendStatus(400);
-          }
-          const deleteRental = await db.query('DELETE FROM rentals WHERE id = $1', [
-            id,
-          ]);
-          if (deleteRental.rowCount === 1) {
-            return res.sendStatus(200);
-          }
-
-    }catch(error){
-       return res.status(500).send(error.message);
+    const rentalId = Number(req.params.id);
+    if (!rentalId || rentalId < 1 || !Number.isSafeInteger(rentalId)) {
+      return res.sendStatus(400);
+    }
+    try {
+      const rentalExists = await db.query('SELECT * FROM rentals WHERE id = $1', [
+        rentalId,
+      ]);
+      if (rentalExists.rowCount !== 1) {
+        return res.sendStatus(404);
+      }
+      const rentalIsFinished = await db.query(
+        'SELECT * FROM rentals WHERE id = $1 AND "returnDate" IS NOT NULL',
+        [rentalId]
+      );
+      if (rentalIsFinished.rowCount !== 1) {
+        return res.sendStatus(400);
+      }
+      const deleteRental = await db.query('DELETE FROM rentals WHERE id = $1', [
+        rentalId,
+      ]);
+      if (deleteRental.rowCount === 1) {
+        return res.sendStatus(200);
+      }
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(500);
     }
 }
