@@ -141,7 +141,7 @@ export async function concluirAluguel(req,res){
 export async function apagarAluguel(req,res){
     const { id } = req.params;
     try{
-        let rentals = await db.query("DELETE FROM rentals WHERE id = $1;" [id]);
+        let rentals = await db.query("SELECT * FROM rentals WHERE id = $1;" [id]);
         if (rentals.rowCount === 0) {
             return res.sendStatus(404);
           }
