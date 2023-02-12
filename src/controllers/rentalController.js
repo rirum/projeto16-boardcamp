@@ -152,12 +152,11 @@ export async function apagarAluguel(req,res){
             return res.sendStatus(400);
           }
       
-          const deleteRental = await db.query("DELETE FROM rentals WHERE id = $1", [id]);
-          if (deleteRental.rowCount === 1){
-            return  res.sendStatus(200);
-          }
+          await db.query("DELETE FROM rentals WHERE id = $1", [id]);
 
-       
+          res.sendStatus(200)
+
+
     }catch(error){
         res.status(500).send(error.message);
     }
